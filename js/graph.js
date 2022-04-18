@@ -14,7 +14,9 @@ var width = window.innerWidth,
   links = [],
   link_distance = 90;
 
-var default_name = "new node";
+var zoomEnabled;
+
+var default_name = "Node";
 
 var force = d3.layout
   .force()
@@ -29,13 +31,15 @@ var zoom = d3.behavior.zoom().on("zoom", function () {
   );
 });
 
-var svg = d3
+var svgRaw = d3
   .select("#chart")
   .append("svg")
   .attr("width", width)
-  .attr("height", height)
-  .call(zoom)
-  .append("g");
+  .attr("height", height);
+//Activate the zoom
+svgRaw.call(zoom);
+
+var svg = svgRaw.append("g");
 
 d3.select(window)
   .on("mousemove", mousemove)
@@ -191,14 +195,16 @@ function node_mouseout(d) {
 }
 
 function zoomToNode(d) {
-  var translate = [
-    width / 2 - zoom.scale() * d.x,
-    height / 2 - zoom.scale() * d.y,
-  ];
-  svg
-    .transition()
-    .duration(750)
-    .call(zoom.translate(translate).scale(zoom.scale()).event);
+  if (should_drag == false) {
+    var translate = [
+      width / 2 - zoom.scale() * d.x,
+      height / 2 - zoom.scale() * d.y,
+    ];
+    svg
+      .transition()
+      .duration(750)
+      .call(zoom.translate(translate).scale(zoom.scale()).event);
+  }
 }
 
 // select node / start drag
@@ -263,10 +269,12 @@ function mousemove() {
 // add a new disconnected node, upon button click
 var addNode = function () {
   var currentNode = {
-    x: width / 2,
-    y: height / 2,
     name: default_name + " " + nodes.length,
     group: 1,
+    image: "None",
+    text: "A Text" + nodes.length,
+    x: width / 2,
+    y: height / 2,
   };
   nodes.push(currentNode);
   selected_node = currentNode;
@@ -322,7 +330,7 @@ function keyup() {
     case 16: {
       // shift
       should_drag = false;
-
+      svgRaw.call(zoom);
       update();
       force.start();
     }
@@ -360,6 +368,7 @@ function keydown() {
     case 16: {
       // shift
       should_drag = true;
+      svgRaw.on(".zoom", null);
       break;
     }
   }
@@ -369,6 +378,7 @@ function keydown() {
 //Show Information
 function showInfo(d) {
   $("#titleText").html(d.name);
+  $("#contentText").html(d.text);
   $("#imageCard").fadeIn();
 }
 
