@@ -200,7 +200,7 @@ function node_mousedown(d) {
   if (!drawing_line) {
     selected_node = d;
     console.log(d);
-    $("#imageCard").fadeIn();
+    showInfo(d);
     selected_link = null;
   }
   if (!should_drag) {
@@ -266,6 +266,7 @@ var addNode = function () {
   force.stop();
   update();
   force.start();
+  showInfo(currentNode);
 };
 
 // switch between drag mode and add mode
@@ -355,6 +356,13 @@ function keydown() {
   }
 }
 
+//GUI
+//Show Information
+function showInfo(d) {
+  $("#titleText").html(d.name);
+  $("#imageCard").fadeIn();
+}
+
 $(document).ready(function () {
   $("#imageCard").hide();
 });
@@ -363,6 +371,5 @@ $(document).on("click", "a", function () {
   //this == the link that was clicked
   var href = $(this).attr("href");
   addNode();
-  $("#imageCard").fadeIn();
   //alert("You're trying to go to " + href);
 });
