@@ -75,7 +75,7 @@ svg
 linesg = svg.append("g");
 circlesg = svg.append("g");
 
-d3.json("./bob.json", function (json) {
+d3.json("/js/bob.json", function (json) {
   // decorate a node with a count of its children
   nodes = json.nodes;
   links = json.links;

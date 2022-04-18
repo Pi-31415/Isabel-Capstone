@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<body>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script>
+    var width = 960,
+      height = 500,
+      active = d3.select(null);
+
+    var zoom = d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
+
+    var force = d3.layout
+      .force()
+      .size([width, height])
+      .charge(-400)
+      .linkDistance(40)
+      .on("tick", tick);
+
+    var drag = force.drag().on("dragstart", dragstart);
+
+    var svg = d3
+      .select("body")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+    // .on("click", reset);
+
+    var g = svg.append("g");
+
+    var link = g.selectAll(".link"),
+      node = g.selectAll(".node");
+
+    svg
+      .call(zoom) // delete this line to disable free zooming
+      .call(zoom.event);
+
+    d3.json(
+      "https://rawgit.com/d3/d3-plugins/master/graph/data/miserables.json",
+      function (error, graph) {
+        if (error) throw error;
+
+        force.nodes(graph.nodes).links(graph.links).start();
+
+        link = link
+          .data(graph.links)
+          .enter()
+          .append("line")
+          .attr("class", "links")
+          .style("stroke", "#999");
+
+        node = node
+          .data(graph.nodes)
+          .enter()
+          .append("circle")
+          .attr("class", "node")
+          .attr("r", 12)
+          .on("click", clicked);
+        //.call(drag);
+      }
+    );
+
+    function tick() {
+      link
+        .attr("x1", function (d) {
+          return d.source.x;
+        })
+        .attr("y1", function (d) {
+          return d.source.y;
+        })
+        .attr("x2", function (d) {
+          return d.target.x;
+        })
+        .attr("y2", function (d) {
+          return d.target.y;
+        });
+
+      node
+        .attr("cx", function (d) {
+          return d.x;
+        })
+        .attr("cy", function (d) {
+          return d.y;
+        });
+    }
+
+    function clicked(d) {
+      if (active.node() === this) return reset();
+      active.classed("active", false);
+      active = d3.select(this).classed("active", true);
+
+      var bbox = active.node().getBBox(),
+        bounds = [
+          [bbox.x, bbox.y],
+          [bbox.x + bbox.width, bbox.y + bbox.height],
+        ];
+
+      var dx = bounds[1][0] - bounds[0][0],
+        dy = bounds[1][1] - bounds[0][1],
+        x = (bounds[0][0] + bounds[1][0]) / 2,
+        y = (bounds[0][1] + bounds[1][1]) / 2,
+        scale = Math.max(1, 1),
+        translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+      svg
+        .transition()
+        .duration(750)
+        .call(zoom.translate(translate).scale(scale).event);
+    }
+
+    function reset() {
+      active.classed("active", false);
+      active = d3.select(null);
+
+      svg
+        .transition()
+        .duration(750)
+        .call(zoom.translate([0, 0]).scale(1).event);
+    }
+
+    function dragstart(d) {
+      d3.select(this).classed("fixed", (d.fixed = true));
+    }
+
+    function zoomed() {
+      console.log(d3.event);
+      g.style("stroke-width", 1.5 / d3.event.scale + "px");
+      g.attr(
+        "transform",
+        "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"
+      );
+    }
+  </script>
+</body>
