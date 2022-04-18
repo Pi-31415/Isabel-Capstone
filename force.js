@@ -26,7 +26,21 @@ var svg = d3
   .select("#chart")
   .append("svg")
   .attr("width", width)
-  .attr("height", height);
+  .attr("height", height)
+  .call(
+    d3.behavior.zoom().on("zoom", function () {
+      svg.attr(
+        "transform",
+        "translate(" +
+          d3.event.translate +
+          ")" +
+          " scale(" +
+          d3.event.scale +
+          ")"
+      );
+    })
+  )
+  .append("g");
 
 d3.select(window)
   .on("mousemove", mousemove)
@@ -114,6 +128,12 @@ function update() {
     .attr("class", "node")
     .call(force.drag)
     .attr("transform", function (d) {
+      if (d.x == undefined) {
+        d.x = 0;
+      }
+      if (d.y == undefined) {
+        d.y = 0;
+      }
       return "translate(" + d.x + "," + d.y + ")";
     });
   nodeg
@@ -150,6 +170,12 @@ function update() {
         return d.target.y;
       });
     node.attr("transform", function (d) {
+      if (d.x == undefined) {
+        d.x = 0;
+      }
+      if (d.y == undefined) {
+        d.y = 0;
+      }
       return "translate(" + d.x + "," + d.y + ")";
     });
   });
@@ -223,12 +249,12 @@ function mousemove() {
   update();
 }
 
-// add a new disconnected node
-function mousedown() {
+// add a new disconnected node, upon button click
+function addNode() {
   m = d3.mouse(svg.node());
   nodes.push({
-    x: m[0],
-    y: m[1],
+    x: width / 2,
+    y: height / 2,
     name: default_name + " " + nodes.length,
     group: 1,
   });
@@ -237,6 +263,9 @@ function mousedown() {
   update();
   force.start();
 }
+
+// switch between drag mode and add mode
+function mousedown() {}
 
 // end node select / add new connected node
 function mouseup() {
