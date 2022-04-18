@@ -38,10 +38,33 @@
         </li>
       </ul>
     </div>
-
-    <!-- Main Graph -->
-
-    <div id="chart"></div>
+    <!-- Two Column -->
+    <div class="rowContainer" style="background-color: #000">
+      <div class="columnContainerLeft">
+        <!-- Main Graph -->
+        <div id="chart"></div>
+      </div>
+      <div class="columnContainerRight">
+        <!-- Card -->
+        <div class="row" id="imageCard">
+          <div class="col" style="margin: 10px">
+            <div class="card">
+              <div class="card-image">
+                <img src="https://materializecss.com/images/sample-1.jpg" />
+                <span class="card-title">Card Title</span>
+              </div>
+              <div class="card-content">
+                <p>
+                  I am a very simple card. I am good at containing small bits of
+                  information. I am convenient because I require little markup
+                  to use effectively.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!--JavaScript at end of body for optimized loading-->
     <script type="text/javascript" src="js/graph.js"></script>
     <script type="text/javascript" src="js/materialize.min.js"></script>

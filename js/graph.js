@@ -199,12 +199,15 @@ function node_mouseout(d) {
 function node_mousedown(d) {
   if (!drawing_line) {
     selected_node = d;
+    console.log(d);
+    $("#imageCard").fadeIn();
     selected_link = null;
   }
   if (!should_drag) {
     d3.event.stopPropagation();
     drawing_line = true;
   }
+
   d.fixed = true;
   force.stop();
   update();
@@ -251,12 +254,14 @@ function mousemove() {
 
 // add a new disconnected node, upon button click
 var addNode = function () {
-  nodes.push({
+  var currentNode = {
     x: width / 2,
     y: height / 2,
     name: default_name + " " + nodes.length,
     group: 1,
-  });
+  };
+  nodes.push(currentNode);
+  selected_node = currentNode;
   selected_link = null;
   force.stop();
   update();
@@ -264,7 +269,15 @@ var addNode = function () {
 };
 
 // switch between drag mode and add mode
-function mousedown() {}
+function mousedown() {
+  selected_node = null;
+  selected_link = null;
+  if (selected_node == null) {
+    $("#imageCard").fadeOut();
+  }
+  update();
+  force.start();
+}
 
 // end node select / add new connected node
 function mouseup() {
@@ -342,9 +355,14 @@ function keydown() {
   }
 }
 
+$(document).ready(function () {
+  $("#imageCard").hide();
+});
+
 $(document).on("click", "a", function () {
   //this == the link that was clicked
   var href = $(this).attr("href");
   addNode();
+  $("#imageCard").fadeIn();
   //alert("You're trying to go to " + href);
 });
