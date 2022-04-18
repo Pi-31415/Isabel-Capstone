@@ -1,0 +1,11 @@
+{
+  "name": "d3-graphs",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Steve Hall <hall.steven.g@gmail.com> (http://delimited.io/)",
+  "license": "ISC",
+  "dependencies": {
+    "node-xlsx": "^0.4.0"
+  }
+}
