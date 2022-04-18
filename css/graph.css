@@ -1,5 +1,6 @@
 marker#child {
-  fill: red;
+  /* Uncomment alpha if you need the arrow */
+  fill: rgba(153, 153, 153, 0);
 }
 
 g.node circle {
@@ -27,18 +28,20 @@ g.node a {
   pointer-events: none;
   font: 10px sans-serif;
   fill: #fff;
+  text-shadow: 0 3px 0 #333740, 3px 0 0 #333740, 0 -3px 0 #333740,
+    -3px 0 0 #333740;
 }
 
 line.link {
   stroke: #999;
-  stroke-opacity: 0.8;
-  stroke-width: 6px;
+  stroke-opacity: 1;
+  stroke-width: 3px;
 }
 
 line.new_line {
   stroke: yellow;
-  stroke-opacity: 0.8;
-  stroke-width: 6px;
+  stroke-opacity: 1;
+  stroke-width: 3px;
 }
 
 line.selected {
@@ -80,4 +83,13 @@ body {
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently
                                 supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* Related to the input form */
+#contentForm {
+  z-index: 999;
+  position: absolute;
+  width: 500px;
+  top: 10px;
+  left: 10px;
 }

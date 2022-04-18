@@ -63,8 +63,7 @@ svg
   .attr("id", String)
   .attr("markerUnits", "userSpaceOnUse")
   .attr("viewBox", "0 -5 10 10")
-  .attr("refX", link_distance)
-  .attr("refY", -1.1)
+  .attr("refX", link_distance / 2)
   .attr("markerWidth", 10)
   .attr("markerHeight", 10)
   .attr("orient", "auto")
@@ -221,8 +220,8 @@ function node_mousedown(d) {
     d3.event.stopPropagation();
     drawing_line = true;
   }
-
-  d.fixed = true;
+  //Pinning the node. Change to true if you want to pin.
+  d.fixed = false;
   force.stop();
   update();
 }
@@ -272,6 +271,7 @@ var addNode = function () {
     name: default_name + " " + nodes.length,
     group: 1,
     image: "None",
+    type: "media",
     text: "A Text" + nodes.length,
     x: width / 2,
     y: height / 2,
@@ -379,6 +379,14 @@ function keydown() {
 function showInfo(d) {
   $("#titleText").html(d.name);
   $("#contentText").html(d.text);
+  $("#contentAuthor").html(d.author);
+  $("#contentDate").html(d.date);
+  //If there is no author, don't show the author info
+  if (d.author == "None") {
+    $("#authorInfo").hide();
+  } else {
+    $("#authorInfo").show();
+  }
   $("#imageCard").fadeIn();
 }
 

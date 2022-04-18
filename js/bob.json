@@ -4,30 +4,45 @@
       "name": "Beauty and the Beast",
       "group": 1,
       "image": "a.jpg",
+      "type": "person",
+      "author": "None",
+      "date": "April 19, 2022 1:53 AM",
       "text": "This is a text about the disney movie."
     },
     {
       "name": "Alladin",
       "group": 1,
       "image": "a.jpg",
+      "type": "theme",
+      "author": "None",
+      "date": "April 19, 2022 1:53 AM",
       "text": "This is a text about Alladin."
     },
     {
       "name": "Titanic",
       "group": 1,
       "image": "a.jpg",
+      "type": "media",
+      "author": "None",
+      "date": "April 19, 2022 1:53 AM",
       "text": "This is a text about a reliable ship."
     },
     {
       "name": "The Tale of Lin & Lang",
       "group": 1,
       "image": "a.jpg",
+      "type": "person",
+      "author": "Pi",
+      "date": "April 19, 2022 1:53 AM",
       "text": "This is a text about a girl and her robot."
     },
     {
       "name": "Whatever",
       "group": 1,
       "image": "a.jpg",
+      "type": "person",
+      "author": "None",
+      "date": "April 19, 2022 1:53 AM",
       "text": "Whatever."
     }
   ],
