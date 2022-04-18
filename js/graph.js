@@ -22,24 +22,19 @@ var force = d3.layout
   .linkDistance(link_distance)
   .size([width, height]);
 
+var zoom = d3.behavior.zoom().on("zoom", function () {
+  svg.attr(
+    "transform",
+    "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")"
+  );
+});
+
 var svg = d3
   .select("#chart")
   .append("svg")
   .attr("width", width)
   .attr("height", height)
-  .call(
-    d3.behavior.zoom().on("zoom", function () {
-      svg.attr(
-        "transform",
-        "translate(" +
-          d3.event.translate +
-          ")" +
-          " scale(" +
-          d3.event.scale +
-          ")"
-      );
-    })
-  )
+  .call(zoom)
   .append("g");
 
 d3.select(window)
@@ -195,12 +190,25 @@ function node_mouseout(d) {
   }
 }
 
+function zoomToNode(d) {
+  var translate = [
+    width / 2 - zoom.scale() * d.x,
+    height / 2 - zoom.scale() * d.y,
+  ];
+  svg
+    .transition()
+    .duration(750)
+    .call(zoom.translate(translate).scale(zoom.scale()).event);
+}
+
 // select node / start drag
 function node_mousedown(d) {
   if (!drawing_line) {
     selected_node = d;
     console.log(d);
     showInfo(d);
+    //Zoom to that node, when clicked
+    zoomToNode(d);
     selected_link = null;
   }
   if (!should_drag) {
