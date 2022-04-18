@@ -250,8 +250,7 @@ function mousemove() {
 }
 
 // add a new disconnected node, upon button click
-function addNode() {
-  m = d3.mouse(svg.node());
+var addNode = function () {
   nodes.push({
     x: width / 2,
     y: height / 2,
@@ -262,7 +261,7 @@ function addNode() {
   force.stop();
   update();
   force.start();
-}
+};
 
 // switch between drag mode and add mode
 function mousedown() {}
@@ -342,3 +341,10 @@ function keydown() {
     }
   }
 }
+
+$(document).on("click", "a", function () {
+  //this == the link that was clicked
+  var href = $(this).attr("href");
+  addNode();
+  //alert("You're trying to go to " + href);
+});
