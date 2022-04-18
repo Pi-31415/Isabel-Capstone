@@ -16,6 +16,33 @@ var width = window.innerWidth,
 
 var zoomEnabled;
 
+//Color Coding
+function color(n) {
+  var color_list = [
+    "#3366cc",
+    "#dc3912",
+    "#ff9900",
+    "#109618",
+    "#990099",
+    "#0099c6",
+    "#dd4477",
+    "#66aa00",
+    "#b82e2e",
+    "#316395",
+    "#994499",
+    "#22aa99",
+    "#aaaa11",
+    "#6633cc",
+    "#e67300",
+    "#8b0707",
+    "#651067",
+    "#329262",
+    "#5574a6",
+    "#3b3eac",
+  ];
+  return color_list[n % color_list.length];
+}
+
 var default_name = "Node";
 
 var force = d3.layout
@@ -139,7 +166,10 @@ function update() {
     .attr("r", 10)
     .on("mousedown", node_mousedown)
     .on("mouseover", node_mouseover)
-    .on("mouseout", node_mouseout);
+    .on("mouseout", node_mouseout)
+    .style("fill", function (d) {
+      return color(d.group); //Color the nodes differently according to category
+    });
   nodeg
     .append("svg:a")
     .attr("xlink:href", function (d) {
@@ -271,8 +301,10 @@ var addNode = function () {
     name: default_name + " " + nodes.length,
     group: 1,
     image: "None",
-    type: "media",
-    text: "A Text" + nodes.length,
+    type: "person",
+    author: "None",
+    date: "April 19, 2022 1:53 AM",
+    text: "A Text about " + nodes.length,
     x: width / 2,
     y: height / 2,
   };

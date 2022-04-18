@@ -3,7 +3,7 @@
     {
       "name": "Beauty and the Beast",
       "group": 1,
-      "image": "a.jpg",
+      "image": "None",
       "type": "person",
       "author": "None",
       "date": "April 19, 2022 1:53 AM",
@@ -11,8 +11,8 @@
     },
     {
       "name": "Alladin",
-      "group": 1,
-      "image": "a.jpg",
+      "group": 2,
+      "image": "None",
       "type": "theme",
       "author": "None",
       "date": "April 19, 2022 1:53 AM",
@@ -20,8 +20,8 @@
     },
     {
       "name": "Titanic",
-      "group": 1,
-      "image": "a.jpg",
+      "group": 3,
+      "image": "None",
       "type": "media",
       "author": "None",
       "date": "April 19, 2022 1:53 AM",
@@ -29,8 +29,8 @@
     },
     {
       "name": "The Tale of Lin & Lang",
-      "group": 1,
-      "image": "a.jpg",
+      "group": 4,
+      "image": "None",
       "type": "person",
       "author": "Pi",
       "date": "April 19, 2022 1:53 AM",
@@ -38,18 +38,38 @@
     },
     {
       "name": "Whatever",
-      "group": 1,
-      "image": "a.jpg",
+      "group": 5,
+      "image": "None",
       "type": "person",
       "author": "None",
       "date": "April 19, 2022 1:53 AM",
       "text": "Whatever."
+    },
+    {
+      "name": "Spirited Away",
+      "group": 2,
+      "image": "None",
+      "type": "person",
+      "author": "None",
+      "date": "April 19, 2022 1:53 AM",
+      "text": "Ghibli Favourite."
+    },
+    {
+      "name": "Arrietty",
+      "group": 3,
+      "image": "None",
+      "type": "person",
+      "author": "None",
+      "date": "April 19, 2022 1:53 AM",
+      "text": "Ghibli Favourite."
     }
   ],
   "links": [
     { "source": 0, "target": 1, "value": 1 },
     { "source": 2, "target": 3, "value": 1 },
     { "source": 1, "target": 3, "value": 1 },
-    { "source": 2, "target": 1, "value": 1 }
+    { "source": 2, "target": 1, "value": 1 },
+    { "source": 4, "target": 5, "value": 1 },
+    { "source": 4, "target": 6, "value": 1 }
   ]
 }
