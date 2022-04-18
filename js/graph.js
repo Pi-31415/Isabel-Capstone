@@ -203,12 +203,12 @@ function zoomToNode(d) {
 
 // select node / start drag
 function node_mousedown(d) {
+  //Zoom to that node, when clicked
+  zoomToNode(d);
   if (!drawing_line) {
     selected_node = d;
     console.log(d);
     showInfo(d);
-    //Zoom to that node, when clicked
-    zoomToNode(d);
     selected_link = null;
   }
   if (!should_drag) {
@@ -322,6 +322,7 @@ function keyup() {
     case 16: {
       // shift
       should_drag = false;
+
       update();
       force.start();
     }
