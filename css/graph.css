@@ -7,6 +7,11 @@ g.node circle {
   stroke-width: 1.5px;
 }
 
+g.node:hover circle {
+  fill: #bf6f7e;
+  cursor: pointer;
+}
+
 g.node.selected circle {
   fill: red;
   stroke-width: 1.5px;
