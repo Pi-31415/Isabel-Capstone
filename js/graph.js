@@ -223,12 +223,15 @@ function update() {
 function appendText(d) {
   var g = d3.select(this); // The node
   // The class is used to remove the additional text later
+  // This highlights the text
   var info = g
     .append("text")
     .classed("info", true)
     .attr("x", 20)
     .attr("y", 10)
-    .text(d.name);
+    .text(function (d) {
+      return d.name;
+    });
 }
 
 // select target node for new node connection
