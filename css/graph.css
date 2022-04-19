@@ -29,8 +29,8 @@ g.node a {
   font: 10px sans-serif;
   fill: #fff;
   /* Text Outline */
-  /* text-shadow: 0 3px 0 #333740, 3px 0 0 #333740, 0 -3px 0 #333740,
-    -3px 0 0 #333740; */
+  text-shadow: 0 3px 0 #333740, 3px 0 0 #333740, 0 -3px 0 #333740,
+    -3px 0 0 #333740;
 }
 
 line.link {

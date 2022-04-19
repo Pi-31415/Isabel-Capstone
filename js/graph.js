@@ -17,6 +17,8 @@ var width = window.innerWidth,
 var zoomEnabled;
 var allNodes;
 var allLinks;
+var showText = true;
+var currentNodeText;
 //Color Coding
 function color(n) {
   var color_list = [
@@ -180,6 +182,15 @@ function update() {
     });
 
   allNodes = nodeg;
+  //Append or not append text, we can choose
+  nodeg
+    .append("text")
+    .classed("nodeText", true)
+    .attr("x", 20)
+    .attr("y", 10)
+    .text(function (d) {
+      return d.name;
+    });
 
   node.exit().remove();
 
@@ -249,6 +260,7 @@ function zoomToNode(d) {
 
 // select node / start drag
 function node_mousedown(d) {
+  showText = !showText;
   //Clear other texts and append
   var g = d3.select(this); // The node
   // The class is used to remove the additional text later
@@ -263,7 +275,6 @@ function node_mousedown(d) {
   zoomToNode(d);
   if (!drawing_line) {
     selected_node = d;
-    console.log(d);
     showInfo(d);
     selected_link = null;
   }
@@ -275,30 +286,16 @@ function node_mousedown(d) {
   d.fixed = false;
   force.stop();
   //Process the highlight
-  toggle = 0;
-  if (toggle == 0) {
-    console.log("No Conn");
-    //Reduce the opacity of all but the neighbouring nodes
-    d = d3.select(this).node().__data__;
-    allNodes.style("opacity", function (o) {
-      return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
-    });
-    //Text append to all connected nodes
+  //Reduce the opacity of all but the neighbouring nodes
+  d = d3.select(this).node().__data__;
+  currentNodeText = d;
+  allNodes.style("opacity", function (o) {
+    return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
+  });
 
-    allLinks.style("opacity", function (o) {
-      return (d.index == o.source.index) | (d.index == o.target.index)
-        ? 1
-        : 0.1;
-    });
-    //Reduce the op
-    toggle = 1;
-  } else {
-    console.log("Conn");
-    //Put them back to opacity=1
-    allNodes.style("opacity", 1);
-    allLinks.style("opacity", 0);
-    toggle = 0;
-  }
+  allLinks.style("opacity", function (o) {
+    return (d.index == o.source.index) | (d.index == o.target.index) ? 1 : 0.1;
+  });
   update();
 }
 
