@@ -1,6 +1,6 @@
 //AJAX Request
 var request;
-
+var editModeOn = false;
 var width = window.innerWidth,
   height = window.innerHeight,
   // var width = 960,
@@ -24,28 +24,7 @@ var showText = true;
 var currentNodeText;
 //Color Coding
 function color(n) {
-  var color_list = [
-    "#3366cc",
-    "#dc3912",
-    "#ff9900",
-    "#109618",
-    "#990099",
-    "#0099c6",
-    "#dd4477",
-    "#66aa00",
-    "#b82e2e",
-    "#316395",
-    "#994499",
-    "#22aa99",
-    "#aaaa11",
-    "#6633cc",
-    "#e67300",
-    "#8b0707",
-    "#651067",
-    "#329262",
-    "#5574a6",
-    "#3b3eac",
-  ];
+  var color_list = ["#ffffff", "#ffffff", "#00A86B", "#ad0303", "#0077b6"];
   return color_list[n % color_list.length];
 }
 
@@ -447,30 +426,32 @@ function keydown() {
   switch (d3.event.keyCode) {
     case 8: // backspace
     case 46: {
-      // delete
-      if (selected_node) {
-        // deal with nodes
-        var i = nodes.indexOf(selected_node);
-        nodes.splice(i, 1);
-        // find links to/from this node, and delete them too
-        var new_links = [];
-        links.forEach(function (l) {
-          if (l.source !== selected_node && l.target !== selected_node) {
-            new_links.push(l);
-          }
-        });
-        links = new_links;
-        selected_node = nodes.length ? nodes[i > 0 ? i - 1 : 0] : null;
-      } else if (selected_link) {
-        // deal with links
-        var i = links.indexOf(selected_link);
-        links.splice(i, 1);
-        selected_link = links.length ? links[i > 0 ? i - 1 : 0] : null;
+      //Delete only when not editing
+      if (editModeOn == false) {
+        if (selected_node) {
+          // deal with nodes
+          var i = nodes.indexOf(selected_node);
+          nodes.splice(i, 1);
+          // find links to/from this node, and delete them too
+          var new_links = [];
+          links.forEach(function (l) {
+            if (l.source !== selected_node && l.target !== selected_node) {
+              new_links.push(l);
+            }
+          });
+          links = new_links;
+          selected_node = nodes.length ? nodes[i > 0 ? i - 1 : 0] : null;
+        } else if (selected_link) {
+          // deal with links
+          var i = links.indexOf(selected_link);
+          links.splice(i, 1);
+          selected_link = links.length ? links[i > 0 ? i - 1 : 0] : null;
+        }
+        //Save JSON after deletion
+        saveJSON();
+        $("#imageCard").fadeOut();
+        update();
       }
-      //Save JSON after deletion
-      saveJSON();
-      $("#imageCard").fadeOut();
-      update();
       break;
     }
     case 16: {
@@ -516,18 +497,21 @@ $(document).ready(function () {
 
 $(document).on("click", "a", function () {
   var href = $(this).attr("href");
-  if (href == "#addNode") {
-    //Submit();
+  if (href == "#closeForm") {
+    $("#contentForm").fadeOut();
+    editModeOn = false;
+    clearText();
   } else if (href == "#openText") {
     //For Text
     $("#imageUploadForm").hide();
     localStorage.setItem("fileName", "None");
-    //Hide content form
     $("#contentForm").fadeIn();
+    editModeOn = true;
   } else if (href == "#openImage") {
     //For Image
     $("#imageUploadForm").show();
     $("#contentForm").fadeIn();
+    editModeOn = true;
   } else if (href == "#Submit") {
     Submit();
   } else if (href == "#OpenDialogue") {
@@ -590,6 +574,12 @@ function saveJSON() {
   );
 }
 
+function clearText() {
+  $("#title").val("");
+  $("#textarea1").val("");
+  $("#first_name").val("");
+}
+
 function Submit() {
   var fileName = localStorage.getItem("fileName");
   if (fileName == null) {
@@ -614,5 +604,8 @@ function Submit() {
     addNode(Title, fileName, Name, Type, TypeName, Content);
     //Hide content form
     $("#contentForm").fadeOut();
+    editModeOn = false;
+    clearText();
+    //Clear Previous values
   }
 }
