@@ -31,13 +31,38 @@
             <span class="card-title"
               >Add your own thoughts, comments, and opinions.</span
             >
-            <div class="row">
+            <div class="row" style="margin-bottom: 0px">
               <form class="col s12">
-                <div class="row">
-                  <div class="input-field col s12">
+                <div class="row" style="margin-bottom: 0px">
+                  <div
+                    class="input-field col s6"
+                    style="margin-top: 30px"
+                    id="nameField"
+                  >
                     <input id="first_name" type="text" class="validate" />
                     <label for="first_name">Name</label>
                   </div>
+                  <div class="input-field col s6">
+                    <!-- Dropdown Begin -->
+                    <div class="input-field col s12">
+                      <select>
+                        <option value="1">Question</option>
+                        <option value="2">Theme</option>
+                        <option value="3">Media</option>
+                        <option value="4" selected>Comment / Opinion</option>
+                      </select>
+                      <label>Select Type of Content</label>
+                    </div>
+                    <!-- Dropdown End -->
+                  </div>
+                </div>
+                <div class="row" style="margin-bottom: 0px">
+                  <div class="input-field col s12">
+                    <input id="title" type="text" class="validate" />
+                    <label for="title">Title</label>
+                  </div>
+                </div>
+                <div class="row" style="margin-bottom: 0px">
                   <div class="input-field col s12">
                     <textarea
                       id="textarea1"
@@ -47,16 +72,54 @@
                       >Thoughts, comments, and opinions</label
                     >
                   </div>
+                  <!-- File upload functions -->
+                  <!-- File Upload Starts-->
+                  <div class="input-field col s12" id="imageUploadForm">
+                    <form
+                      method="post"
+                      action=""
+                      enctype="multipart/form-data"
+                      id="myform"
+                    >
+                      <div class="preview">
+                        <img src="" id="imgPreview" width="100" height="100" />
+                      </div>
+
+                      <div class="file-field input-field">
+                        <div class="btn orange">
+                          <span
+                            ><i class="material-icons left">attach_file</i
+                            >Choose Image</span
+                          >
+                          <input type="file" id="file" name="file" />
+                        </div>
+                        <div class="file-path-wrapper">
+                          <input class="file-path validate" type="text" />
+                        </div>
+                        <p style="color: gray">
+                          *Please choose <b>jpg, jpeg and png</b> files only.
+                        </p>
+                      </div>
+                    </form>
+                  </div>
                   <div class="input-field col s12">
                     <p>
                       <label>
-                        <input type="checkbox" />
+                        <input type="checkbox" id="check" />
                         <span>I wish to remain anonymous.</span>
                       </label>
                     </p>
                   </div>
+                  <!-- File uplaod ends -->
+                  <div class="progress orange" id="uploadProgressbar">
+                    <div class="indeterminate"></div>
+                  </div>
+                  <a
+                    class="waves-effect waves-light btn-large orange"
+                    href="#Submit"
+                    ><i class="material-icons left">send</i>Submit</a
+                  >
                 </div>
-                <a href="#">This is a link</a>
               </form>
             </div>
           </div>
@@ -65,15 +128,19 @@
     </div>
     <!-- Floating Action Button -->
     <div class="fixed-action-btn">
-      <a class="btn-floating btn-large orange">
+      <a class="btn-floating btn-large orange" href="#OpenDialogue">
         <i class="large material-icons">add</i>
       </a>
       <ul>
         <li id="add">
-          <a class="btn-floating green"><i class="material-icons">edit</i></a>
+          <a class="btn-floating green" href="#openText"
+            ><i class="material-icons">edit</i></a
+          >
         </li>
         <li>
-          <a class="btn-floating blue"><i class="material-icons">image</i></a>
+          <a class="btn-floating blue" href="#openImage"
+            ><i class="material-icons">image</i></a
+          >
         </li>
       </ul>
     </div>
@@ -87,9 +154,9 @@
         <!-- Card -->
         <div class="row" id="imageCard">
           <div class="col" style="margin: 10px">
-            <div class="card">
-              <div class="card-image">
-                <img src="https://materializecss.com/images/sample-1.jpg" />
+            <div class="card" style="width: 300px">
+              <div class="card-image" id="cardImageContainer">
+                <img src="" id="cardImageSource" />
               </div>
               <div class="card-content">
                 <div id="contentDisplay">
@@ -130,6 +197,86 @@
           direction: "top",
         });
       });
+    </script>
+    <!-- File Uploading Script -->
+    <script type="text/javascript">
+      //Checkbox change
+      $("#check").change(function () {
+        if ($(this).is(":checked")) {
+          //console.log($(this).val() + " is now checked");
+          $("#nameField").fadeOut();
+          $("#first_name").val("None");
+        } else {
+          //console.log($(this).val() + " is now unchecked");
+          $("#first_name").val("");
+          $("#nameField").fadeIn();
+          $("#first_name").focus();
+        }
+      });
+
+      //Select change
+      $("select").on("change", function () {
+        localStorage.setItem("type", this.value);
+        if (localStorage.getItem("type") == 1) {
+          localStorage.setItem("typeName", "Question");
+        } else if (localStorage.getItem("type") == 2) {
+          localStorage.setItem("typeName", "Theme");
+        } else if (localStorage.getItem("type") == 3) {
+          localStorage.setItem("typeName", "Media");
+        } else if (localStorage.getItem("type") == 4) {
+          localStorage.setItem("typeName", "Comment/Opinion");
+        }
+      });
+
+      $(document).ready(function () {
+        //Hide the form
+        $("#contentForm").hide();
+        //Reset document
+        localStorage.setItem("typeName", "Comment/Opinion");
+        localStorage.setItem("type", 4);
+        localStorage.setItem("fileName", "None");
+        // Enable Select
+        $("select").formSelect();
+        //Hide unnecessary elements
+        $("#uploadProgressbar").hide();
+        $("#imgPreview").hide();
+      });
+      // file event handle, auto upload
+      $('input[type="file"]').change(function (e) {
+        $("#imgPreview").hide();
+        $("#uploadProgressbar").fadeIn();
+        var fileName = e.target.files[0].name;
+        localStorage.setItem("fileName", fileName);
+        //This uploads the file automatically upon selection
+        var fd = new FormData();
+        var files = $("#file")[0].files;
+
+        // Check file selected or not
+        if (files.length > 0) {
+          fd.append("file", files[0]);
+
+          $.ajax({
+            url: "./upload.php",
+            type: "post",
+            data: fd,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+              if (response != 0) {
+                //Success
+                $("#uploadProgressbar").hide();
+                $("#imgPreview").attr("src", response);
+                $("#imgPreview").fadeIn(); // Display image element
+              } else {
+                alert("file not uploaded");
+              }
+            },
+          });
+        } else {
+          alert("Please select a file.");
+        }
+      });
+      // event end
     </script>
   </body>
 </html>

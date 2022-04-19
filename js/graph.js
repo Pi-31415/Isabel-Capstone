@@ -357,15 +357,16 @@ function mousemove() {
 }
 
 // add a new disconnected node, upon button click
-var addNode = function () {
+var addNode = function (Title, fileName, Name, Type, TypeName, Content) {
+  var date = new Date();
   var currentNode = {
-    name: default_name + " " + nodes.length,
-    group: 1,
-    image: "None",
-    type: "person",
-    author: "None",
-    date: "April 19, 2022 1:53 AM",
-    text: "A Text about " + nodes.length,
+    name: Title,
+    group: Type,
+    image: fileName,
+    type: TypeName,
+    author: Name,
+    date: date.toLocaleString(),
+    text: Content,
     x: width / 2,
     y: height / 2,
   };
@@ -417,6 +418,8 @@ function mouseup() {
     }
     selected_node.fixed = false;
     links.push({ source: selected_node, target: new_node });
+    //Update the links
+    saveJSON();
     selected_node = selected_target_node = null;
     update();
     setTimeout(function () {
@@ -464,6 +467,9 @@ function keydown() {
         links.splice(i, 1);
         selected_link = links.length ? links[i > 0 ? i - 1 : 0] : null;
       }
+      //Save JSON after deletion
+      saveJSON();
+      $("#imageCard").fadeOut();
       update();
       break;
     }
@@ -489,6 +495,14 @@ function showInfo(d) {
   } else {
     $("#authorInfo").show();
   }
+  //If there is no image, don't show
+  if (d.image == "None" || d.image == undefined) {
+    $("#cardImageContainer").hide();
+    $("#cardImageSource").attr("src", "./upload/white_image.png");
+  } else {
+    $("#cardImageSource").attr("src", "./upload/" + d.image);
+    $("#cardImageContainer").fadeIn();
+  }
   $("#imageCard").fadeIn();
 }
 
@@ -502,7 +516,22 @@ $(document).ready(function () {
 
 $(document).on("click", "a", function () {
   var href = $(this).attr("href");
-  addNode();
+  if (href == "#addNode") {
+    //Submit();
+  } else if (href == "#openText") {
+    //For Text
+    $("#imageUploadForm").hide();
+    localStorage.setItem("fileName", "None");
+    //Hide content form
+    $("#contentForm").fadeIn();
+  } else if (href == "#openImage") {
+    //For Image
+    $("#imageUploadForm").show();
+    $("#contentForm").fadeIn();
+  } else if (href == "#Submit") {
+    Submit();
+  } else if (href == "#OpenDialogue") {
+  }
 });
 
 //Graph Traversal
@@ -559,4 +588,31 @@ function saveJSON() {
       console.log("Saving " + status);
     }
   );
+}
+
+function Submit() {
+  var fileName = localStorage.getItem("fileName");
+  if (fileName == null) {
+    localStorage.setItem("fileName", "None");
+  }
+  var Name = $("#first_name").val();
+  var Content = $("#textarea1").val();
+  var Title = $("#title").val();
+  if (Name == "") {
+    Name = "None";
+  }
+  var Type = localStorage.getItem("type");
+  var TypeName = localStorage.getItem("typeName");
+  console.log(fileName);
+  console.log(Name);
+  console.log(Type);
+  console.log(TypeName);
+  //Add Node Finally
+  if (Title == "") {
+    alert("No Title Given. Please put a title.");
+  } else {
+    addNode(Title, fileName, Name, Type, TypeName, Content);
+    //Hide content form
+    $("#contentForm").fadeOut();
+  }
 }
