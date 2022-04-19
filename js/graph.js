@@ -15,7 +15,8 @@ var width = window.innerWidth,
   link_distance = 90;
 
 var zoomEnabled;
-
+var allNodes;
+var allLinks;
 //Color Coding
 function color(n) {
   var color_list = [
@@ -136,6 +137,8 @@ function update() {
     .on("mousedown", line_mousedown);
   link.exit().remove();
 
+  allLinks = link;
+
   var node = circlesg
     .selectAll(".node")
     .data(nodes, function (d) {
@@ -149,7 +152,12 @@ function update() {
     });
   var nodeg = node
     .enter()
-    .append("g")
+    .append("g") //Only show the text after over
+    .on("mouseover", appendText)
+    .on("mouseout", function () {
+      // Remove the info text on mouse out.
+      d3.select(this).select("text.info").remove();
+    })
     .attr("class", "node")
     .call(force.drag)
     .attr("transform", function (d) {
@@ -170,17 +178,9 @@ function update() {
     .style("fill", function (d) {
       return color(d.group); //Color the nodes differently according to category
     });
-  nodeg
-    .append("svg:a")
-    .attr("xlink:href", function (d) {
-      return d.url || "#";
-    })
-    .append("text")
-    .attr("dx", 12)
-    .attr("dy", ".35em")
-    .text(function (d) {
-      return d.name;
-    });
+
+  allNodes = nodeg;
+
   node.exit().remove();
 
   force.on("tick", function (e) {
@@ -207,6 +207,17 @@ function update() {
       return "translate(" + d.x + "," + d.y + ")";
     });
   });
+}
+
+function appendText(d) {
+  var g = d3.select(this); // The node
+  // The class is used to remove the additional text later
+  var info = g
+    .append("text")
+    .classed("info", true)
+    .attr("x", 20)
+    .attr("y", 10)
+    .text(d.name);
 }
 
 // select target node for new node connection
@@ -238,6 +249,16 @@ function zoomToNode(d) {
 
 // select node / start drag
 function node_mousedown(d) {
+  //Clear other texts and append
+  var g = d3.select(this); // The node
+  // The class is used to remove the additional text later
+  var info = g
+    .append("text")
+    .classed("info", true)
+    .attr("x", 20)
+    .attr("y", 10)
+    .text(d.name);
+
   //Zoom to that node, when clicked
   zoomToNode(d);
   if (!drawing_line) {
@@ -253,6 +274,31 @@ function node_mousedown(d) {
   //Pinning the node. Change to true if you want to pin.
   d.fixed = false;
   force.stop();
+  //Process the highlight
+  toggle = 0;
+  if (toggle == 0) {
+    console.log("No Conn");
+    //Reduce the opacity of all but the neighbouring nodes
+    d = d3.select(this).node().__data__;
+    allNodes.style("opacity", function (o) {
+      return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
+    });
+    //Text append to all connected nodes
+
+    allLinks.style("opacity", function (o) {
+      return (d.index == o.source.index) | (d.index == o.target.index)
+        ? 1
+        : 0.1;
+    });
+    //Reduce the op
+    toggle = 1;
+  } else {
+    console.log("Conn");
+    //Put them back to opacity=1
+    allNodes.style("opacity", 1);
+    allLinks.style("opacity", 0);
+    toggle = 0;
+  }
   update();
 }
 
@@ -314,11 +360,19 @@ var addNode = function () {
   force.stop();
   update();
   force.start();
-  showInfo(currentNode);
 };
 
 // switch between drag mode and add mode
 function mousedown() {
+  if (selected_node != null) {
+    //Reset the line display
+    allNodes.style("opacity", 1);
+    allLinks.style("opacity", 0);
+    toggle = 0;
+  }
+  //Also clear all the texts
+  d3.selectAll("text.info").remove();
+  //Reset the nodes
   selected_node = null;
   selected_link = null;
   if (selected_node == null) {
@@ -412,7 +466,7 @@ function showInfo(d) {
   $("#titleText").html(d.name);
   $("#contentText").html(d.text);
   $("#contentAuthor").html(d.author);
-  $("#contentDate").html(d.date);
+  //$("#contentDate").html(d.date);
   //If there is no author, don't show the author info
   if (d.author == "None") {
     $("#authorInfo").hide();
@@ -424,11 +478,27 @@ function showInfo(d) {
 
 $(document).ready(function () {
   $("#imageCard").hide();
+  //Disable Links
+  allLinks.style("opacity", 0);
 });
 
 $(document).on("click", "a", function () {
-  //this == the link that was clicked
   var href = $(this).attr("href");
   addNode();
-  //alert("You're trying to go to " + href);
 });
+
+//Graph Traversal
+//Toggle stores whether the highlighting is on
+var toggle = 0;
+//Create an array logging what is connected to what
+var linkedByIndex = {};
+for (i = 0; i < nodes.length; i++) {
+  linkedByIndex[i + "," + i] = 1;
+}
+links.forEach(function (d) {
+  linkedByIndex[d.source.index + "," + d.target.index] = 1;
+});
+//This function looks up whether a pair are neighbours
+function neighboring(a, b) {
+  return linkedByIndex[a.index + "," + b.index];
+}
