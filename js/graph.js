@@ -1,3 +1,6 @@
+//AJAX Request
+var request;
+
 var width = window.innerWidth,
   height = window.innerHeight,
   // var width = 960,
@@ -103,13 +106,24 @@ svg
 linesg = svg.append("g");
 circlesg = svg.append("g");
 
-d3.json("./js/data.json", function (json) {
-  // decorate a node with a count of its children
-  nodes = json.nodes;
-  links = json.links;
-  update();
-  force = force.nodes(nodes).links(links);
-  force.start();
+$.ajax({
+  url: "https://paingthet.com/UPLOAD/apps/CollectiveGaze/getLastFile.php",
+  success: function (result) {
+    //Remove Loader
+    current_file_name =
+      "https://paingthet.com/UPLOAD/apps/CollectiveGaze/backup/" + result;
+
+    d3.json(current_file_name, function (json) {
+      // decorate a node with a count of its children
+      nodes = json.nodes;
+      links = json.links;
+      update();
+      force = force.nodes(nodes).links(links);
+      force.start();
+      //Hide links
+      allLinks.style("opacity", 0);
+    });
+  },
 });
 
 function update() {
@@ -298,7 +312,7 @@ function node_mousedown(d) {
   });
 
   allLinks.style("opacity", function (o) {
-    return (d.index == o.source.index) | (d.index == o.target.index) ? 1 : 0.0;
+    return (d.index == o.source.index) | (d.index == o.target.index) ? 1 : 0.1;
   });
   update();
 }
@@ -361,6 +375,7 @@ var addNode = function () {
   force.stop();
   update();
   force.start();
+  saveJSON();
 };
 
 // switch between drag mode and add mode
@@ -487,8 +502,7 @@ $(document).ready(function () {
 
 $(document).on("click", "a", function () {
   var href = $(this).attr("href");
-  saveJSON();
-  //addNode();
+  addNode();
 });
 
 //Graph Traversal
@@ -509,18 +523,40 @@ function neighboring(a, b) {
 
 //Saving Functions
 function saveJSON() {
+  //console.log(nodes);
+  //Node Parser
+  var sourceid, targetid;
+  var parsedlink = [];
+  for (var j = 0; j < links.length; j++) {
+    //console.log(links[j].source.name);
+    for (var i = 0; i < nodes.length; i++) {
+      //console.log(nodes[i].name);
+      if (nodes[i].name == links[j].source.name) {
+        sourceid = i;
+      }
+    }
+    for (var i = 0; i < nodes.length; i++) {
+      //console.log(nodes[i].name);
+      if (nodes[i].name == links[j].target.name) {
+        targetid = i;
+      }
+    }
+    parsedlink.push({ source: sourceid, target: targetid });
+  }
+  //console.log(links);
+  //console.log(parsedlink);
   var file_contents = JSON.stringify({
     nodes: nodes,
-    edges: links,
+    links: parsedlink,
   });
-  console.log(file_contents);
+  //console.log(file_contents);
   $.post(
     "https://paingthet.com/UPLOAD/apps/CollectiveGaze/fileHandler.php",
     {
       content: file_contents,
     },
     function (data, status) {
-      console.log(status);
+      console.log("Saving " + status);
     }
   );
 }
