@@ -103,7 +103,7 @@ svg
 linesg = svg.append("g");
 circlesg = svg.append("g");
 
-d3.json("/js/data.json", function (json) {
+d3.json("./js/data.json", function (json) {
   // decorate a node with a count of its children
   nodes = json.nodes;
   links = json.links;
@@ -179,7 +179,8 @@ function update() {
     .on("mouseout", node_mouseout)
     .style("fill", function (d) {
       return color(d.group); //Color the nodes differently according to category
-    });
+    })
+    .style("opacity", 0.8);
 
   allNodes = nodeg;
   //Append or not append text, we can choose
@@ -297,7 +298,7 @@ function node_mousedown(d) {
   });
 
   allLinks.style("opacity", function (o) {
-    return (d.index == o.source.index) | (d.index == o.target.index) ? 1 : 0.1;
+    return (d.index == o.source.index) | (d.index == o.target.index) ? 1 : 0.0;
   });
   update();
 }
@@ -479,12 +480,15 @@ function showInfo(d) {
 $(document).ready(function () {
   $("#imageCard").hide();
   //Disable Links
-  allLinks.style("opacity", 0);
+  if (allLinks != undefined) {
+    allLinks.style("opacity", 0);
+  }
 });
 
 $(document).on("click", "a", function () {
   var href = $(this).attr("href");
-  addNode();
+  saveJSON();
+  //addNode();
 });
 
 //Graph Traversal
@@ -501,4 +505,22 @@ links.forEach(function (d) {
 //This function looks up whether a pair are neighbours
 function neighboring(a, b) {
   return linkedByIndex[a.index + "," + b.index];
+}
+
+//Saving Functions
+function saveJSON() {
+  var file_contents = JSON.stringify({
+    nodes: nodes,
+    edges: links,
+  });
+  console.log(file_contents);
+  $.post(
+    "https://paingthet.com/UPLOAD/apps/CollectiveGaze/fileHandler.php",
+    {
+      content: file_contents,
+    },
+    function (data, status) {
+      console.log(status);
+    }
+  );
 }
